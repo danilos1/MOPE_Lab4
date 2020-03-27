@@ -279,7 +279,7 @@ public class ThreeFactorsExperiment {
             }
         }
         System.out.println("=> A quantity of significant coefficients d = "+d);
-        System.out.printf("The equation of regression: y = %+f%+f*X1%+f*X2%+f*X3%+f*X1X2%+f*X1X3" +
+        System.out.printf("The adjusted equation of regression: y = %+f%+f*X1%+f*X2%+f*X3%+f*X1X2%+f*X1X3" +
                 "%+f*X2X3%+f*X1X2X3\n", b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]);
 
         y_ = new double[N];
@@ -326,7 +326,16 @@ public class ThreeFactorsExperiment {
 
         if (Fp <= Ft)
             System.out.println("Fp <= Ft => So, the equation is adequate to original with q = "+q);
-        else
-            System.out.println("Fp > Ft => So, the equation is inadequate to original with q = "+q);
+        else {
+            System.out.println("Fp > Ft => So, the equation is inadequate to original with q = " + q+". \n" +
+                    "Since the equation is not adequate to the original, we start the analysis again.\n\n");
+            m = 3;
+            generateMatrixOfPlanning(m);
+            printMatrixOfPlanning();
+            findCoefficients();
+            testByCriterionKohrena();
+            testByStudentCriterion();
+            testByFisheraCriterion();
+        }
     }
 }
