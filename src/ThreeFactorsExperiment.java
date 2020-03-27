@@ -44,9 +44,9 @@ public class ThreeFactorsExperiment {
     }
 
     public void printMatrixOfPlanning() {
-        System.out.print("X1\t\t\tX2\t\t\tX3\t\t\tX1X2\t\tX1X3\t\tX2X3\t\tX1X2X3\t\t");
+        System.out.printf("%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t", "x1", "x2","x3","x1x2","x1x3","x2x3","x1x2x3");
         for (int i = 0; i < m; i++) {
-            System.out.printf("Y%d\t", i + 1);
+            System.out.printf("Y%-5d", i + 1);
         }
         System.out.println();
         for (int i = 0, k = 0; i < N; i++) {
