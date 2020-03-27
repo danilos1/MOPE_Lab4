@@ -4,5 +4,5 @@
 **To setup project you should go to terminal/console and setup the following .bat file:**
 ```MOPE_Lab4.bat```
 
-**Or you should go to terminal/console and setup the following command:**
+**Or you can go to terminal/console and type the following command:**
 ```java -jar ./MOPE_Lab4.jar```
