@@ -16,7 +16,7 @@ public class Lab4 {
 
         ThreeFactorsExperiment exp = new ThreeFactorsExperiment(xMinMax, Ymin, Ymax);
         exp.printMatrixOfPlanning();
-        exp.findCoefficients();
+        exp.findEquationOfRegression();
 
         exp.testByCriterionKohrena();
         exp.testByStudentCriterion();

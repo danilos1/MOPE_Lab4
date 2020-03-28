@@ -5,7 +5,7 @@ public class ThreeFactorsExperiment {
     private int N = 8;
     private int Ymin, Ymax;
     private static int m = 3;
-    private int[][] xk = {
+    private int[][] xk = { // Кодовані значення x
             {1, 1, 1, 1, 1, 1, 1, 1},
             {-1, -1, -1, -1, 1, 1, 1, 1},
             {-1, -1, 1, 1, -1, -1, 1, 1},
@@ -17,11 +17,12 @@ public class ThreeFactorsExperiment {
     };
     private int[][] x, y;
     private int[] X;
-    private double[] Yavg = new double[N];
-    private double[] b = new double[N];
-    private double[] S2y, y_;
-    private int d;
+    private double[] Yavg = new double[N]; // Середні значення Yi по рядках, i=1..N
+    private double[] b = new double[N]; // Значення b коефіцієнтів
+    private double[] S2y, y_; // Коефіцієнти для перевірок
+    private int d; // Кількість значущих коеф.
 
+    // Метод для отримання визначника матриці.
     public double getDeterminant(double[][] a) {
         if (a.length == 1)
             return a[0][0];
@@ -43,6 +44,7 @@ public class ThreeFactorsExperiment {
         }
     }
 
+    // Метод для відображення матриці планування ПФЕ
     public void printMatrixOfPlanning() {
         System.out.printf("%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t%-8s\t", "x1", "x2","x3","x1x2","x1x3","x2x3","x1x2x3");
         for (int i = 0; i < m; i++) {
@@ -55,10 +57,12 @@ public class ThreeFactorsExperiment {
             }
             System.out.print(Arrays.toString(y[i]) + "\n");
         }
+
+        System.out.println("\nYavg = " + Arrays.toString(Yavg));
         System.out.println("========================================================================================");
-        System.out.println("Yavg = " + Arrays.toString(Yavg));
     }
 
+    // Конструктор класу
     public ThreeFactorsExperiment(int[] X, int Ymin, int Ymax) {
         if (X.length != 6) {
             throw new RuntimeException("The length of array 'x' must be equaled 6! But founded " + X.length);
@@ -69,6 +73,7 @@ public class ThreeFactorsExperiment {
         generateMatrixOfPlanning(m);
     }
 
+    // Метод для створення матрицы планування
     private void generateMatrixOfPlanning(int m) {
         Random random = new Random();
         d = 0;
@@ -76,6 +81,7 @@ public class ThreeFactorsExperiment {
         x = new int[N-1][N];
         int total = 0;
 
+        // Заповнення матриці
         for (int i = 0, k = 0; i < 3; i++, k += 2) {
             for (int j = 0; j < x[i].length; j++) {
                 x[i][j] = (xk[i + 1][j] == -1) ? X[k] : X[k + 1];
@@ -108,6 +114,7 @@ public class ThreeFactorsExperiment {
         }
     }
 
+
     private double sum(int[]... x) {
         double sum = 0;
         for (int i = 0, k; i < N; i++) {
@@ -120,10 +127,12 @@ public class ThreeFactorsExperiment {
         return sum;
     }
 
-    public void findCoefficients() {
+    public void findEquationOfRegression() {
         double[] k = new double[N];
         double[][] m = new double[N][N];
 
+
+        // Знаходження m00..m77 коефіцієнтів
         m[0][0] = N;
         m[0][1] = m[1][0] = Arrays.stream(x[0]).sum();
         m[0][2] = m[2][0] = Arrays.stream(x[1]).sum();
@@ -181,10 +190,13 @@ public class ThreeFactorsExperiment {
             }
             b[i] = getDeterminant(tempArr)/det;
         }
-        System.out.printf("The equation of regression: y = %+f%+f*X1%+f*X2%+f*X3%+f*X1X2%+f*X1X3" +
+
+        // Рівняння регресії з ефектом взаємодії
+        System.out.printf("\nThe equation of regression with interaction effect: y = %+f%+f*X1%+f*X2%+f*X3%+f*X1X2%+f*X1X3" +
                 "%+f*X2X3%+f*X1X2X3\n", b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]);
     }
 
+    // Перша статистична перевірка
     public void testByCriterionKohrena() {
         double S2max = 0;
         double q = 0.05;
@@ -200,7 +212,7 @@ public class ThreeFactorsExperiment {
                 {.6020, .4450, .3733, .3311, .3029, .2823, .2666, .2541, .2439, .2353},
         };
 
-        System.out.println("============================Test by criterion Cohrena============================");
+        System.out.println("\n============================Test by criterion Cohrena============================");
         System.out.println("1. Statical dispersions S2{Yi} (i=1, N) on rows: ");
 
         S2y = new double[N];
@@ -232,11 +244,12 @@ public class ThreeFactorsExperiment {
             System.out.println("G >= Gkr => dispersion is not uniform with q=" + q+". So, m = m + 1 = "+(++m)+"\n");
             generateMatrixOfPlanning(m);
             printMatrixOfPlanning();
-            findCoefficients();
+            findEquationOfRegression();
             testByCriterionKohrena();
         }
     }
 
+    // Друга статистична перевірка
     public void testByStudentCriterion() {
         System.out.println("\n============================Test by criterion Studenta============================");
         double[] StudentaTable = {12.71, 4.303, 3.182, 2.776, 2.571, 2.447, 2.365, 2.306, 2.262,
@@ -279,7 +292,10 @@ public class ThreeFactorsExperiment {
             }
         }
         System.out.println("=> A quantity of significant coefficients d = "+d);
-        System.out.printf("The adjusted equation of regression: y = %+f%+f*X1%+f*X2%+f*X3%+f*X1X2%+f*X1X3" +
+
+        // Скореговане рівняння регресії з ефектом взаємодії
+        System.out.printf("\nThe adjusted equation of regression with interaction effect: " +
+                "y = %+f%+f*X1%+f*X2%+f*X3%+f*X1X2%+f*X1X3" +
                 "%+f*X2X3%+f*X1X2X3\n", b[0], b[1], b[2], b[3], b[4], b[5], b[6], b[7]);
 
         y_ = new double[N];
@@ -290,6 +306,7 @@ public class ThreeFactorsExperiment {
         }
     }
 
+    // Третя статистична перевірка
     public void testByFisheraCriterion() {
         System.out.println("\n============================Test by criterion Fishera============================");
         double[][] FisheraTable = {
@@ -332,7 +349,7 @@ public class ThreeFactorsExperiment {
             m = 3;
             generateMatrixOfPlanning(m);
             printMatrixOfPlanning();
-            findCoefficients();
+            findEquationOfRegression();
             testByCriterionKohrena();
             testByStudentCriterion();
             testByFisheraCriterion();
